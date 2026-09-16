@@ -34,27 +34,7 @@
 </head>
 <body>
 
-  <!-- Platform View Switcher (Header Bar) -->
-  <div class="view-switcher-bar">
-    <div class="container switcher-content">
-      <div class="store-status-pill" id="header-store-status">
-        <span class="status-dot green"></span> <strong id="status-text-header">LOCAL ABIERTO</strong>
-      </div>
-      <div class="mode-buttons">
-        <button class="mode-btn active" id="btn-view-store" data-target="view-store">
-          <i class="fa-solid fa-store"></i> Tienda Clientes
-        </button>
-        <button class="mode-btn" id="btn-view-kds" data-target="view-kds">
-          <i class="fa-solid fa-utensils"></i> Pantalla Cocina KDS
-        </button>
-        <button class="mode-btn" id="btn-view-admin" data-target="view-admin">
-          <i class="fa-solid fa-sliders"></i> Backoffice Admin
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Top Announcement Bar -->
+  <!-- Top Announcement Bar (Cliente) -->
   <div class="announcement-bar">
     <div class="container announcement-content">
       <span id="announcement-text"><i class="fa-solid fa-fire"></i> ¡Masa Madre con 48hs de Fermentación!</span>
@@ -65,7 +45,7 @@
     </div>
   </div>
 
-  <!-- VIEW 1: TIENDA PARA CLIENTES -->
+  <!-- VISTA 1: TIENDA PÚBLICA PARA CLIENTES -->
   <div class="app-view active" id="view-store">
 
     <!-- Main Navigation Header -->
@@ -263,48 +243,6 @@
       </div>
     </section>
 
-    <!-- Flyer Image Showcase Section -->
-    <section class="flyer-section">
-      <div class="container">
-        <div class="flyer-wrapper">
-          <div class="flyer-info">
-            <span class="section-subtitle">CARTA OFICIAL EN IMAGEN</span>
-            <h2>Consulá nuestro menú completo impreso</h2>
-            <p>Ten a mano todos los gustos, promos y combinaciones disponibles en Alveolo Pizzería.</p>
-            <div class="contact-quick-list">
-              <div class="quick-contact-item">
-                <i class="fa-solid fa-phone"></i>
-                <div>
-                  <strong>Teléfono Fijo</strong>
-                  <span>2355 2326</span>
-                </div>
-              </div>
-              <div class="quick-contact-item">
-                <i class="fa-brands fa-whatsapp"></i>
-                <div>
-                  <strong>WhatsApp Pedidos</strong>
-                  <span>095 679 986</span>
-                </div>
-              </div>
-              <div class="quick-contact-item">
-                <i class="fa-brands fa-instagram"></i>
-                <div>
-                  <strong>Instagram</strong>
-                  <span>@Pizzeria.alveolo</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="flyer-card">
-            <img src="assets/menu_flyer.jpg" alt="Menú Completo Alveolo Pizzería Masa Madre" class="flyer-img" id="flyer-zoom">
-            <div class="flyer-overlay-hint">
-              <i class="fa-solid fa-magnifying-glass-plus"></i> Menú Oficial Alveolo
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Concept Section -->
     <section class="concept-section" id="concepto">
       <div class="container">
@@ -438,125 +376,102 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <div class="container">
+        <div class="container footer-bottom-flex">
           <p>&copy; 2026 Alveolo Pizzería. Todos los derechos reservados.</p>
+          <button class="admin-access-link" id="btn-open-login-modal">
+            <i class="fa-solid fa-lock"></i> Acceso Personal
+          </button>
         </div>
       </div>
     </footer>
 
   </div>
 
-  <!-- VIEW 2: PANTALLA DE COCINA (KDS) -->
-  <div class="app-view" id="view-kds">
-    <div class="kds-header">
-      <div class="kds-title">
-        <i class="fa-solid fa-utensils"></i>
-        <div>
-          <h2>Pantalla de Cocina (KDS) - ALVEOLO</h2>
-          <span>Monitoreo de comandas en tiempo real</span>
-        </div>
-      </div>
-      <div class="kds-actions">
-        <button class="btn btn-sm btn-secondary" id="kds-sound-toggle">
-          <i class="fa-solid fa-volume-high"></i> Sonido: ON
-        </button>
-        <span class="live-pulse"><i class="fa-solid fa-circle"></i> SUPABASE REALTIME</span>
-      </div>
-    </div>
-
-    <div class="kds-container">
-      <div class="kds-column" id="kds-col-pendiente">
-        <div class="kds-col-header yellow">
-          <h3><i class="fa-solid fa-clock"></i> Pendientes <span class="badge" id="count-pendiente">0</span></h3>
-        </div>
-        <div class="kds-cards-list" id="list-pendiente">
-          <!-- Dynamically populated -->
-        </div>
-      </div>
-
-      <div class="kds-column" id="kds-col-en_horno">
-        <div class="kds-col-header orange">
-          <h3><i class="fa-solid fa-fire"></i> En Horno <span class="badge" id="count-en_horno">0</span></h3>
-        </div>
-        <div class="kds-cards-list" id="list-en_horno">
-          <!-- Dynamically populated -->
-        </div>
-      </div>
-
-      <div class="kds-column" id="kds-col-listo">
-        <div class="kds-col-header green">
-          <h3><i class="fa-solid fa-circle-check"></i> Listos / Empacar <span class="badge" id="count-listo">0</span></h3>
-        </div>
-        <div class="kds-cards-list" id="list-listo">
-          <!-- Dynamically populated -->
-        </div>
-      </div>
-
-      <div class="kds-column" id="kds-col-entregado">
-        <div class="kds-col-header grey">
-          <h3><i class="fa-solid fa-check-double"></i> Entregados <span class="badge" id="count-entregado">0</span></h3>
-        </div>
-        <div class="kds-cards-list" id="list-entregado">
-          <!-- Dynamically populated -->
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- VIEW 3: BACKOFFICE ADMIN -->
+  <!-- VISTA 2: PANEL DE ADMINISTRACIÓN / OPERADOR PROTEGIDO -->
   <div class="app-view" id="view-admin">
     <div class="admin-header">
       <div class="container admin-nav-flex">
-        <h2><i class="fa-solid fa-sliders"></i> Panel de Administración - ALVEOLO</h2>
+        <div class="admin-brand">
+          <img src="assets/logo.jpg" alt="Logo" class="admin-logo-small">
+          <div>
+            <h2 id="admin-header-title"><i class="fa-solid fa-sliders"></i> Panel de Administración - ALVEOLO</h2>
+            <span class="session-badge" id="session-role-badge">Rol: Administrador</span>
+          </div>
+        </div>
         <div class="admin-status-control">
-          <span>Estado del Local:</span>
           <button class="btn btn-sm btn-whatsapp" id="admin-toggle-store-btn">
             <i class="fa-solid fa-store"></i> Local: ABIERTO
           </button>
-          <button class="btn btn-sm btn-outline" id="btn-config-supabase">
-            <i class="fa-solid fa-database"></i> Conectar Supabase
+          <button class="btn btn-sm btn-secondary" id="admin-logout-btn">
+            <i class="fa-solid fa-right-from-bracket"></i> Salir
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Inner Tabs for Admin -->
+    <div class="admin-subnav">
+      <div class="container admin-subnav-flex">
+        <button class="admin-tab-btn active" data-tab="tab-orders">
+          <i class="fa-solid fa-list-check"></i> Gestión de Pedidos en Vivo
+        </button>
+        <button class="admin-tab-btn admin-only" data-tab="tab-products">
+          <i class="fa-solid fa-tags"></i> Precios & Productos
+        </button>
+        <button class="admin-tab-btn admin-only" data-tab="tab-flavors">
+          <i class="fa-solid fa-leaf"></i> Stock de Gustos
+        </button>
+        <button class="admin-tab-btn admin-only" data-tab="tab-metrics">
+          <i class="fa-solid fa-chart-line"></i> Métricas & Ventas
+        </button>
       </div>
     </div>
 
     <div class="container admin-content">
-      <!-- Admin Metrics Bar -->
-      <div class="admin-metrics-grid">
-        <div class="metric-card">
-          <i class="fa-solid fa-file-invoice-dollar icon-blue"></i>
-          <div>
-            <span class="metric-label">Ventas Totales</span>
-            <h3 class="metric-value" id="admin-total-revenue">$0</h3>
+
+      <!-- TAB 1: GESTIÓN DE PEDIDOS EN VIVO -->
+      <div class="admin-tab-content active" id="tab-orders">
+        <div class="admin-box">
+          <div class="admin-box-header flex-between">
+            <div>
+              <h3><i class="fa-solid fa-bell"></i> Comandas & Pedidos Recibidos</h3>
+              <span class="small-text">Sincronización en tiempo real con Supabase</span>
+            </div>
+            <button class="btn btn-sm btn-secondary" id="admin-sound-toggle">
+              <i class="fa-solid fa-volume-high"></i> Sonido: ON
+            </button>
           </div>
-        </div>
-        <div class="metric-card">
-          <i class="fa-solid fa-pizza-slice icon-gold"></i>
-          <div>
-            <span class="metric-label">Pedidos Recibidos</span>
-            <h3 class="metric-value" id="admin-total-orders">0</h3>
-          </div>
-        </div>
-        <div class="metric-card">
-          <i class="fa-solid fa-fire icon-red"></i>
-          <div>
-            <span class="metric-label">Pizza Más Vendida</span>
-            <h3 class="metric-value" id="admin-top-pizza">Masa Madre Pesto</h3>
+
+          <div class="orders-board-grid">
+            <div class="orders-column">
+              <div class="col-title yellow"><i class="fa-solid fa-clock"></i> Pendientes (<span id="cnt-pend">0</span>)</div>
+              <div class="orders-list-box" id="list-orders-pendiente"></div>
+            </div>
+            <div class="orders-column">
+              <div class="col-title orange"><i class="fa-solid fa-fire"></i> En Preparación (<span id="cnt-prep">0</span>)</div>
+              <div class="orders-list-box" id="list-orders-preparacion"></div>
+            </div>
+            <div class="orders-column">
+              <div class="col-title blue"><i class="fa-solid fa-motorcycle"></i> En Camino / Listo (<span id="cnt-camino">0</span>)</div>
+              <div class="orders-list-box" id="list-orders-camino"></div>
+            </div>
+            <div class="orders-column">
+              <div class="col-title green"><i class="fa-solid fa-circle-check"></i> Entregados (<span id="cnt-entregado">0</span>)</div>
+              <div class="orders-list-box" id="list-orders-entregado"></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Admin Management Tabs -->
-      <div class="admin-sections-grid">
-        
-        <!-- Products & Price Management -->
+      <!-- TAB 2: GESTIÓN DE PRECIOS & PRODUCTOS -->
+      <div class="admin-tab-content" id="tab-products">
         <div class="admin-box">
           <div class="admin-box-header">
-            <h3><i class="fa-solid fa-tags"></i> Gestión de Precios & Productos</h3>
-            <span class="small-text">Edita precios o activa/desactiva stock instantáneamente</span>
+            <h3><i class="fa-solid fa-tags"></i> Precios & Estado de Productos</h3>
+            <span class="small-text">Modifica los precios del menú que ven los clientes</span>
           </div>
           <div class="admin-table-wrapper">
-            <table class="admin-table" id="admin-products-table">
+            <table class="admin-table">
               <thead>
                 <tr>
                   <th>Producto</th>
@@ -566,53 +481,86 @@
                   <th>Acción</th>
                 </tr>
               </thead>
-              <tbody id="admin-products-tbody">
-                <!-- Populated by JS -->
-              </tbody>
+              <tbody id="admin-products-tbody"></tbody>
             </table>
           </div>
         </div>
+      </div>
 
-        <!-- Flavor Stock Switcher -->
+      <!-- TAB 3: STOCK DE GUSTOS -->
+      <div class="admin-tab-content" id="tab-flavors">
         <div class="admin-box">
           <div class="admin-box-header">
             <h3><i class="fa-solid fa-leaf"></i> Stock de Gustos e Ingredientes</h3>
-            <span class="small-text">Si te quedas sin un ingrediente, desactívalo aquí</span>
+            <span class="small-text">Activa o pausa gustos si te quedas sin insumos</span>
           </div>
-          <div class="flavors-stock-grid" id="admin-flavors-list">
-            <!-- Populated by JS -->
+          <div class="flavors-stock-grid" id="admin-flavors-list"></div>
+        </div>
+      </div>
+
+      <!-- TAB 4: MÉTRICAS & VENTAS -->
+      <div class="admin-tab-content" id="tab-metrics">
+        <div class="admin-metrics-grid">
+          <div class="metric-card">
+            <i class="fa-solid fa-file-invoice-dollar icon-blue"></i>
+            <div>
+              <span class="metric-label">Ventas Totales</span>
+              <h3 class="metric-value" id="admin-total-revenue">$0</h3>
+            </div>
+          </div>
+          <div class="metric-card">
+            <i class="fa-solid fa-pizza-slice icon-gold"></i>
+            <div>
+              <span class="metric-label">Total de Pedidos</span>
+              <h3 class="metric-value" id="admin-total-orders">0</h3>
+            </div>
+          </div>
+          <div class="metric-card">
+            <i class="fa-solid fa-fire icon-red"></i>
+            <div>
+              <span class="metric-label">Pizza Más Vendida</span>
+              <h3 class="metric-value" id="admin-top-pizza">Masa Madre Pesto</h3>
+            </div>
           </div>
         </div>
-
       </div>
 
     </div>
   </div>
 
-  <!-- Supabase Config Modal -->
-  <div class="modal-backdrop" id="modal-supabase-backdrop"></div>
-  <div class="item-modal" id="modal-supabase">
-    <button class="modal-close" id="modal-supabase-close"><i class="fa-solid fa-xmark"></i></button>
+  <!-- MODAL DE LOGIN PROTEGIDO DE ADMINISTRACIÓN -->
+  <div class="modal-backdrop" id="modal-login-backdrop"></div>
+  <div class="item-modal" id="modal-login">
+    <button class="modal-close" id="modal-login-close"><i class="fa-solid fa-xmark"></i></button>
     <div class="modal-content">
-      <h3 style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem; color: var(--primary-dark);">
-        <i class="fa-solid fa-database"></i> Conectar con tu Supabase
-      </h3>
-      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
-        Pega las credenciales de tu proyecto de Supabase.com para sincronizar la base de datos en vivo.
-      </p>
+      <div class="text-center" style="margin-bottom: 1.5rem;">
+        <img src="assets/logo.jpg" alt="Logo" style="width: 70px; height: 70px; border-radius: 50%; margin: 0 auto 0.75rem;">
+        <h3 style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 800; color: var(--primary-dark);">
+          Acceso Personal Alveolo
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Ingresa tus credenciales para gestionar el local o atender comandas.
+        </p>
+      </div>
 
       <div class="input-group" style="margin-bottom: 1rem;">
-        <label for="sp-url">SUPABASE_URL</label>
-        <input type="text" id="sp-url" placeholder="https://xyzxyz.supabase.co">
+        <label for="login-role">Seleccionar Rol</label>
+        <select id="login-role" style="width: 100%; padding: 0.7rem; border-radius: 8px; border: 1px solid var(--border-light); font-family: inherit;">
+          <option value="admin">Administrador General (Acceso Total)</option>
+          <option value="operator">Operador / Gestor de Pedidos</option>
+        </select>
       </div>
 
       <div class="input-group" style="margin-bottom: 1.5rem;">
-        <label for="sp-key">SUPABASE_ANON_KEY</label>
-        <input type="text" id="sp-key" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6...">
+        <label for="login-pass">Contraseña / PIN de Acceso</label>
+        <input type="password" id="login-pass" placeholder="Ingresa tu clave de acceso" required>
+        <span style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem; display: block;">
+          (Clave por defecto: <strong>alveolo2026</strong>)
+        </span>
       </div>
 
-      <button class="btn btn-primary btn-block" id="btn-save-supabase-keys">
-        <i class="fa-solid fa-floppy-disk"></i> Guardar & Conectar
+      <button class="btn btn-primary btn-block btn-lg" id="btn-submit-login">
+        <i class="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
       </button>
     </div>
   </div>

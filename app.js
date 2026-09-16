@@ -2,7 +2,7 @@
 // ALVEOLO PIZZERÍA - FULL-STACK PLATFORM ENGINE (SUPABASE REALTIME & BACKOFFICE)
 // ==========================================================================
 
-// Initial Products Database (Default Fallback)
+// Initial Products Database
 let productsData = [
   {
     id: "mm-pesto",
@@ -160,20 +160,21 @@ let flavorsData = [
 
 let ordersData = [];
 let isStoreOpen = true;
+let activeRole = sessionStorage.getItem("alveolo_logged_role") || null; // 'admin' or 'operator'
 
-// Pre-configured Supabase Credentials for Alveolo
+// Supabase Credentials
 let supabaseClient = null;
-let supabaseUrl = localStorage.getItem("alveolo_sp_url") || "https://wpaeqkpiskdxlaxgveom.supabase.co";
-let supabaseKey = localStorage.getItem("alveolo_sp_key") || "sb_publishable_4ELqp97b8ORO6BVZvrPlww_eK0dhk0o";
+let supabaseUrl = "https://wpaeqkpiskdxlaxgveom.supabase.co";
+let supabaseKey = "sb_publishable_4ELqp97b8ORO6BVZvrPlww_eK0dhk0o";
 
 // Shopping Cart State
 let cart = [];
 let deliveryMode = "delivery";
-let kdsSoundEnabled = true;
+let adminSoundEnabled = true;
 
-// Synthetic Audio Chime Context
+// Sound Notification
 function playOrderChime() {
-  if (!kdsSoundEnabled) return;
+  if (!adminSoundEnabled) return;
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
@@ -188,19 +189,27 @@ function playOrderChime() {
     osc.start();
     osc.stop(ctx.currentTime + 0.5);
   } catch (e) {
-    console.log("Audio play error:", e);
+    console.log("Audio error:", e);
   }
 }
 
 // Initialize Application
 document.addEventListener("DOMContentLoaded", () => {
   initSupabase();
-  setupViewSwitcher();
   setupEventListeners();
   renderProducts("todos");
-  renderKDS();
-  renderAdmin();
   updateCartUI();
+
+  // Check query params for quick admin access or existing session
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("admin") === "true" || activeRole) {
+    if (!activeRole) {
+      openLoginModal();
+    } else {
+      switchView("view-admin");
+      applyRolePermissions();
+    }
+  }
 });
 
 // Initialize Supabase Client
@@ -208,15 +217,11 @@ function initSupabase() {
   if (supabaseUrl && supabaseKey && window.supabase) {
     try {
       supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-      console.log("Connected to Supabase Realtime Database: " + supabaseUrl);
       loadSupabaseData();
       subscribeToOrdersRealtime();
     } catch (err) {
       console.error("Error connecting to Supabase:", err);
     }
-  } else {
-    const savedOrders = localStorage.getItem("alveolo_orders");
-    if (savedOrders) ordersData = JSON.parse(savedOrders);
   }
 }
 
@@ -225,31 +230,25 @@ async function loadSupabaseData() {
   if (!supabaseClient) return;
 
   try {
-    // Load Products
     const { data: prods } = await supabaseClient.from("products").select("*");
     if (prods && prods.length > 0) {
       productsData = prods;
       renderProducts("todos");
     }
 
-    // Load Flavors
     const { data: flavs } = await supabaseClient.from("flavors").select("*");
-    if (flavs && flavs.length > 0) {
-      flavorsData = flavs;
-    }
+    if (flavs && flavs.length > 0) flavorsData = flavs;
 
-    // Load Store Config
     const { data: conf } = await supabaseClient.from("store_settings").select("*").single();
     if (conf) {
       isStoreOpen = conf.is_open;
       updateStoreOpenUI();
     }
 
-    // Load Orders
     const { data: ords } = await supabaseClient.from("orders").select("*").order("created_at", { ascending: false });
     if (ords) {
       ordersData = ords;
-      renderKDS();
+      renderAdminOrders();
       renderAdminMetrics();
     }
   } catch (e) {
@@ -257,7 +256,7 @@ async function loadSupabaseData() {
   }
 }
 
-// Subscribe to Supabase Realtime Channels for Kitchen KDS
+// Subscribe to Supabase Realtime Channels
 function subscribeToOrdersRealtime() {
   if (!supabaseClient) return;
 
@@ -265,120 +264,124 @@ function subscribeToOrdersRealtime() {
     .channel("public:orders")
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "orders" }, (payload) => {
       ordersData.unshift(payload.new);
-      renderKDS();
+      renderAdminOrders();
       renderAdminMetrics();
-      playOrderChime();
-      showToast("🔔 ¡NUEVO PEDIDO RECIBIDO EN COCINA!");
+      if (activeRole) {
+        playOrderChime();
+        showToast("🔔 ¡NUEVA COMANDA RECIBIDA!");
+      }
     })
     .on("postgres_changes", { event: "UPDATE", schema: "public", table: "orders" }, (payload) => {
       const idx = ordersData.findIndex(o => o.id === payload.new.id);
       if (idx !== -1) ordersData[idx] = payload.new;
-      renderKDS();
+      renderAdminOrders();
       renderAdminMetrics();
     })
     .subscribe();
 }
 
-// Setup View Switching Tabs (Storefront, KDS, Admin)
-function setupViewSwitcher() {
-  const modeBtns = document.querySelectorAll(".mode-btn");
-  modeBtns.forEach(btn => {
+// Switch Views
+function switchView(viewId) {
+  document.querySelectorAll(".app-view").forEach(v => v.classList.remove("active"));
+  const target = document.getElementById(viewId);
+  if (target) target.classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// Open / Close Login Modal
+function openLoginModal() {
+  document.getElementById("modal-login")?.classList.add("active");
+  document.getElementById("modal-login-backdrop")?.classList.add("active");
+}
+
+function closeLoginModal() {
+  document.getElementById("modal-login")?.classList.remove("active");
+  document.getElementById("modal-login-backdrop")?.classList.remove("active");
+}
+
+// Handle Login Form Submit
+function handleLogin() {
+  const role = document.getElementById("login-role").value;
+  const pass = document.getElementById("login-pass").value;
+
+  if (pass === "alveolo2026" || pass === "1234") {
+    activeRole = role;
+    sessionStorage.setItem("alveolo_logged_role", role);
+    closeLoginModal();
+    switchView("view-admin");
+    applyRolePermissions();
+    showToast(`¡Sesión iniciada como ${role === 'admin' ? 'Administrador' : 'Operador de Pedidos'}!`);
+  } else {
+    alert("Contraseña incorrecta. (Clave por defecto: alveolo2026)");
+  }
+}
+
+function applyRolePermissions() {
+  const roleBadge = document.getElementById("session-role-badge");
+  const adminTitle = document.getElementById("admin-header-title");
+  
+  if (roleBadge) {
+    roleBadge.textContent = `Rol: ${activeRole === 'admin' ? 'Administrador General' : 'Operador de Pedidos'}`;
+  }
+
+  // Show/Hide Admin Only Tabs
+  const adminOnlyTabs = document.querySelectorAll(".admin-only");
+  adminOnlyTabs.forEach(tab => {
+    tab.style.display = activeRole === "admin" ? "inline-block" : "none";
+  });
+
+  renderAdminOrders();
+  renderAdminProductsTable();
+  renderAdminFlavors();
+  renderAdminMetrics();
+}
+
+// Admin Subtab Switching
+function setupAdminTabs() {
+  const tabBtns = document.querySelectorAll(".admin-tab-btn");
+  tabBtns.forEach(btn => {
     btn.addEventListener("click", () => {
-      modeBtns.forEach(b => b.classList.remove("active"));
+      tabBtns.forEach(b => b.classList.remove("active"));
       btn.classList.add("active");
       
-      const targetId = btn.getAttribute("data-target");
-      document.querySelectorAll(".app-view").forEach(v => v.classList.remove("active"));
-      const targetView = document.getElementById(targetId);
-      if (targetView) targetView.classList.add("active");
-      
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      const tabTarget = btn.getAttribute("data-tab");
+      document.querySelectorAll(".admin-tab-content").forEach(c => c.classList.remove("active"));
+      const content = document.getElementById(tabTarget);
+      if (content) content.classList.add("active");
     });
   });
 }
 
-// Render Products Grid (Storefront)
-function renderProducts(categoryFilter = "todos", searchQuery = "") {
-  const container = document.getElementById("products-grid");
-  if (!container) return;
-
-  let filtered = productsData.filter(item => {
-    const matchesCategory = categoryFilter === "todos" || item.category === categoryFilter;
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (item.desc && item.desc.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesCategory && matchesSearch;
-  });
-
-  if (filtered.length === 0) {
-    container.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
-        <i class="fa-solid fa-pizza-slice" style="font-size: 3rem; margin-bottom: 1rem; color: var(--border-light);"></i>
-        <h3>No se encontraron productos</h3>
-        <p>Intenta con otra búsqueda o categoría.</p>
-      </div>
-    `;
-    return;
-  }
-
-  container.innerHTML = filtered.map(item => `
-    <div class="product-card" style="${!item.in_stock ? 'opacity: 0.6;' : ''}">
-      <div class="product-thumb">
-        <img src="${item.image}" alt="${item.title}" loading="lazy">
-        ${item.badge ? `<span class="product-badge">${item.badge}</span>` : ''}
-        ${!item.in_stock ? `<span class="product-badge" style="background: var(--accent-red); right: auto; left: 10px;">AGOTADO</span>` : ''}
-      </div>
-      <div class="product-details">
-        <h3 class="product-title">${item.title}</h3>
-        <p class="product-desc">${item.desc || ''}</p>
-        <div class="product-footer">
-          <span class="product-price">$${item.price}</span>
-          ${!item.in_stock ? `
-            <button class="btn btn-sm btn-secondary" disabled>Sin Stock</button>
-          ` : item.hasOptions ? `
-            <button class="btn btn-sm btn-outline open-options-btn" data-id="${item.id}">
-              <i class="fa-solid fa-sliders"></i> Elegir Gustos
-            </button>
-          ` : `
-            <button class="btn btn-sm btn-primary add-to-cart-btn" data-id="${item.id}">
-              <i class="fa-solid fa-plus"></i> Agregar
-            </button>
-          `}
-        </div>
-      </div>
-    </div>
-  `).join("");
-}
-
-// Render Kitchen Display System (KDS)
-function renderKDS() {
-  const colPendiente = document.getElementById("list-pendiente");
-  const colEnHorno = document.getElementById("list-en_horno");
-  const colListo = document.getElementById("list-listo");
-  const colEntregado = document.getElementById("list-entregado");
+// Render Orders in Admin Backoffice
+function renderAdminOrders() {
+  const colPendiente = document.getElementById("list-orders-pendiente");
+  const colPrep = document.getElementById("list-orders-preparacion");
+  const colCamino = document.getElementById("list-orders-camino");
+  const colEntregado = document.getElementById("list-orders-entregado");
 
   if (!colPendiente) return;
 
   const grouped = {
     pendiente: ordersData.filter(o => o.status === "pendiente" || !o.status),
-    en_horno: ordersData.filter(o => o.status === "en_horno"),
-    listo: ordersData.filter(o => o.status === "listo"),
+    preparacion: ordersData.filter(o => o.status === "en_preparacion" || o.status === "en_horno"),
+    camino: ordersData.filter(o => o.status === "en_camino" || o.status === "listo"),
     entregado: ordersData.filter(o => o.status === "entregado")
   };
 
-  document.getElementById("count-pendiente").textContent = grouped.pendiente.length;
-  document.getElementById("count-en_horno").textContent = grouped.en_horno.length;
-  document.getElementById("count-listo").textContent = grouped.listo.length;
-  document.getElementById("count-entregado").textContent = grouped.entregado.length;
+  document.getElementById("cnt-pend").textContent = grouped.pendiente.length;
+  document.getElementById("cnt-prep").textContent = grouped.preparacion.length;
+  document.getElementById("cnt-camino").textContent = grouped.camino.length;
+  document.getElementById("cnt-entregado").textContent = grouped.entregado.length;
 
-  renderKDSCards(colPendiente, grouped.pendiente, "en_horno", "🔥 Pasar a Horno");
-  renderKDSCards(colEnHorno, grouped.en_horno, "listo", "✅ Marcar Listo");
-  renderKDSCards(colListo, grouped.listo, "entregado", "📦 Marcar Entregado");
-  renderKDSCards(colEntregado, grouped.entregado, null, "Completado");
+  renderOrderColumn(colPendiente, grouped.pendiente, "en_preparacion", "🔥 Pasar a Preparación");
+  renderOrderColumn(colPrep, grouped.preparacion, "en_camino", "🛵 Despachar / En Camino");
+  renderOrderColumn(colCamino, grouped.camino, "entregado", "✅ Marcar Entregado");
+  renderOrderColumn(colEntregado, grouped.entregado, null, "✔ Completado");
 }
 
-function renderKDSCards(container, list, nextStatus, nextActionText) {
+function renderOrderColumn(container, list, nextStatus, nextText) {
   if (list.length === 0) {
-    container.innerHTML = `<div style="text-align: center; color: #617769; padding: 2rem 0; font-size: 0.9rem;">Sin comandas</div>`;
+    container.innerHTML = `<div style="text-align: center; color: var(--text-light); padding: 1.5rem 0; font-size: 0.85rem;">Sin pedidos</div>`;
     return;
   }
 
@@ -387,68 +390,48 @@ function renderKDSCards(container, list, nextStatus, nextActionText) {
     const itemsList = Array.isArray(order.items) ? order.items : [];
 
     return `
-      <div class="kds-ticket">
-        <div class="kds-ticket-header">
+      <div class="order-card-ticket">
+        <div class="order-card-header">
           <div>
-            <div class="kds-ticket-cust">${order.customer_name}</div>
-            <div class="kds-ticket-time"><i class="fa-solid fa-clock"></i> ${timeStr} | ${order.delivery_mode === 'delivery' ? '🛵 Delivery' : '🏪 Retiro'}</div>
+            <div class="order-card-cust">${order.customer_name}</div>
+            <div style="font-size: 0.75rem; color: var(--text-muted);"><i class="fa-solid fa-clock"></i> ${timeStr} | ${order.delivery_mode === 'delivery' ? '🛵 Delivery' : '🏪 Retiro'}</div>
           </div>
-          <div style="font-weight: 800; color: var(--accent-gold); font-size: 1.1rem;">$${order.total}</div>
+          <div style="font-weight: 900; font-family: var(--font-heading); color: var(--accent-red); font-size: 1.1rem;">$${order.total}</div>
         </div>
-        <div class="kds-ticket-items">
+        <div class="order-card-items">
           ${itemsList.map(it => `
-            <div class="kds-ticket-item">
+            <div class="order-card-item">
               <strong>${it.qty}x</strong> ${it.title}
             </div>
           `).join("")}
-          ${order.notes ? `<div style="font-size: 0.8rem; color: #e5a93c; margin-top: 0.4rem;">💬 <em>${order.notes}</em></div>` : ''}
+          ${order.address ? `<div style="font-size: 0.8rem; color: var(--primary); margin-top: 0.25rem;">📍 <strong>${order.address}</strong></div>` : ''}
+          ${order.notes ? `<div style="font-size: 0.78rem; color: #d97706; margin-top: 0.2rem;">💬 <em>${order.notes}</em></div>` : ''}
         </div>
         ${nextStatus ? `
-          <button class="kds-ticket-btn" onclick="updateOrderStatus('${order.id}', '${nextStatus}')">
-            ${nextActionText}
+          <button class="btn btn-sm btn-primary btn-block" onclick="updateOrderStatus('${order.id}', '${nextStatus}')">
+            ${nextText}
           </button>
-        ` : `<div style="text-align: center; font-size: 0.8rem; color: #8fa697;">✔ Entregado</div>`}
+        ` : `<div style="text-align: center; font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">✔ Entregado</div>`}
       </div>
     `;
   }).join("");
 }
 
-// Update Order Status in Supabase / Local
+// Update Order Status
 async function updateOrderStatus(orderId, newStatus) {
   const order = ordersData.find(o => o.id === orderId);
-  if (order) {
-    order.status = newStatus;
-  }
+  if (order) order.status = newStatus;
 
   if (supabaseClient) {
     await supabaseClient.from("orders").update({ status: newStatus }).eq("id", orderId);
-  } else {
-    localStorage.setItem("alveolo_orders", JSON.stringify(ordersData));
   }
 
-  renderKDS();
+  renderAdminOrders();
   renderAdminMetrics();
-  showToast(`Estado de pedido actualizado a: ${newStatus.replace('_', ' ').toUpperCase()}`);
+  showToast(`Estado actualizado: ${newStatus.replace('_', ' ').toUpperCase()}`);
 }
 
-// Render Admin Dashboard
-function renderAdmin() {
-  renderAdminMetrics();
-  renderAdminProductsTable();
-  renderAdminFlavors();
-}
-
-function renderAdminMetrics() {
-  const totalRevEl = document.getElementById("admin-total-revenue");
-  const totalOrdersEl = document.getElementById("admin-total-orders");
-  const topPizzaEl = document.getElementById("admin-top-pizza");
-
-  const totalRev = ordersData.reduce((sum, o) => sum + (o.total || 0), 0);
-  if (totalRevEl) totalRevEl.textContent = `$${totalRev}`;
-  if (totalOrdersEl) totalOrdersEl.textContent = ordersData.length;
-  if (topPizzaEl) topPizzaEl.textContent = "Masa Madre Pesto";
-}
-
+// Render Products Table (Admin Only)
 function renderAdminProductsTable() {
   const tbody = document.getElementById("admin-products-tbody");
   if (!tbody) return;
@@ -464,7 +447,7 @@ function renderAdminProductsTable() {
         <input type="checkbox" ${p.in_stock ? 'checked' : ''} onchange="toggleProductStock('${p.id}', this.checked)" style="width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer;">
       </td>
       <td>
-        <button class="btn btn-sm btn-outline" onclick="showToast('Precio actualizado')">Guardar</button>
+        <button class="btn btn-sm btn-outline" onclick="showToast('Precio guardado')">Guardar</button>
       </td>
     </tr>
   `).join("");
@@ -485,6 +468,17 @@ function renderAdminFlavors() {
   `).join("");
 }
 
+function renderAdminMetrics() {
+  const totalRevEl = document.getElementById("admin-total-revenue");
+  const totalOrdersEl = document.getElementById("admin-total-orders");
+  const topPizzaEl = document.getElementById("admin-top-pizza");
+
+  const totalRev = ordersData.reduce((sum, o) => sum + (o.total || 0), 0);
+  if (totalRevEl) totalRevEl.textContent = `$${totalRev}`;
+  if (totalOrdersEl) totalOrdersEl.textContent = ordersData.length;
+  if (topPizzaEl) topPizzaEl.textContent = "Masa Madre Pesto";
+}
+
 // Update Product Price
 async function updateProductPrice(id, newPrice) {
   const prod = productsData.find(p => p.id === id);
@@ -497,7 +491,6 @@ async function updateProductPrice(id, newPrice) {
   showToast("Precio guardado en la base de datos.");
 }
 
-// Toggle Product Stock
 async function toggleProductStock(id, inStock) {
   const prod = productsData.find(p => p.id === id);
   if (prod) prod.in_stock = inStock;
@@ -506,10 +499,9 @@ async function toggleProductStock(id, inStock) {
     await supabaseClient.from("products").update({ in_stock: inStock }).eq("id", id);
   }
   renderProducts("todos");
-  showToast(`Stock de producto ${inStock ? 'activado' : 'desactivado'}`);
+  showToast(`Stock ${inStock ? 'activado' : 'desactivado'}`);
 }
 
-// Toggle Flavor Stock
 async function toggleFlavorStock(flavorId, inStock) {
   const flav = flavorsData.find(f => f.id === flavorId);
   if (flav) flav.in_stock = inStock;
@@ -520,7 +512,6 @@ async function toggleFlavorStock(flavorId, inStock) {
   showToast(`Gusto ${flav ? flav.name : ''} ${inStock ? 'disponible' : 'pausado'}`);
 }
 
-// Toggle Store Open/Close Status
 async function toggleStoreStatus() {
   isStoreOpen = !isStoreOpen;
   updateStoreOpenUI();
@@ -533,22 +524,23 @@ async function toggleStoreStatus() {
 
 function updateStoreOpenUI() {
   const statusHeader = document.getElementById("status-text-header");
-  const dot = document.querySelector(".status-dot");
   const adminBtn = document.getElementById("admin-toggle-store-btn");
-
   if (statusHeader) statusHeader.textContent = isStoreOpen ? "LOCAL ABIERTO" : "LOCAL CERRADO";
-  if (dot) dot.className = `status-dot ${isStoreOpen ? 'green' : 'red'}`;
   if (adminBtn) adminBtn.innerHTML = `<i class="fa-solid fa-store"></i> Local: ${isStoreOpen ? 'ABIERTO' : 'CERRADO'}`;
 }
 
 // Event Listeners
 function setupEventListeners() {
+  setupAdminTabs();
+
+  // Mobile Nav Toggle
   const mobileToggle = document.getElementById("mobile-toggle");
   const navLinks = document.getElementById("nav-links");
   if (mobileToggle && navLinks) {
     mobileToggle.addEventListener("click", () => navLinks.classList.toggle("show"));
   }
 
+  // Filter Pills
   const filterPills = document.querySelectorAll(".filter-pill");
   filterPills.forEach(pill => {
     pill.addEventListener("click", () => {
@@ -560,6 +552,7 @@ function setupEventListeners() {
     });
   });
 
+  // Search Input
   const searchInput = document.getElementById("menu-search");
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
@@ -569,6 +562,7 @@ function setupEventListeners() {
     });
   }
 
+  // Products Grid delegate
   const productsGrid = document.getElementById("products-grid");
   if (productsGrid) {
     productsGrid.addEventListener("click", (e) => {
@@ -586,10 +580,12 @@ function setupEventListeners() {
     });
   }
 
+  // Cart Drawer
   document.getElementById("cart-btn")?.addEventListener("click", openCart);
   document.getElementById("cart-close")?.addEventListener("click", closeCart);
   document.getElementById("cart-backdrop")?.addEventListener("click", closeCart);
 
+  // Delivery Mode Toggle
   const toggleBtns = document.querySelectorAll(".toggle-btn");
   const addressGroup = document.getElementById("address-group");
   toggleBtns.forEach(btn => {
@@ -601,50 +597,34 @@ function setupEventListeners() {
     });
   });
 
+  // Footer Discreet Login Trigger
+  document.getElementById("btn-open-login-modal")?.addEventListener("click", openLoginModal);
+  document.getElementById("modal-login-close")?.addEventListener("click", closeLoginModal);
+  document.getElementById("modal-login-backdrop")?.addEventListener("click", closeLoginModal);
+
+  // Submit Login
+  document.getElementById("btn-submit-login")?.addEventListener("click", handleLogin);
+
+  // Logout
+  document.getElementById("admin-logout-btn")?.addEventListener("click", () => {
+    sessionStorage.removeItem("alveolo_logged_role");
+    activeRole = null;
+    switchView("view-store");
+    showToast("Sesión cerrada correctamente.");
+  });
+
+  // Toggle Store Status
   document.getElementById("admin-toggle-store-btn")?.addEventListener("click", toggleStoreStatus);
 
-  document.getElementById("btn-config-supabase")?.addEventListener("click", () => {
-    const urlInput = document.getElementById("sp-url");
-    const keyInput = document.getElementById("sp-key");
-    if (urlInput) urlInput.value = supabaseUrl;
-    if (keyInput) keyInput.value = supabaseKey;
-    document.getElementById("modal-supabase")?.classList.add("active");
-    document.getElementById("modal-supabase-backdrop")?.classList.add("active");
-  });
-
-  document.getElementById("modal-supabase-close")?.addEventListener("click", closeSupabaseModal);
-  document.getElementById("modal-supabase-backdrop")?.addEventListener("click", closeSupabaseModal);
-
-  document.getElementById("btn-save-supabase-keys")?.addEventListener("click", () => {
-    const url = document.getElementById("sp-url").value.trim();
-    const key = document.getElementById("sp-key").value.trim();
-    if (!url || !key) {
-      alert("Por favor ingresa la SUPABASE_URL y la SUPABASE_ANON_KEY.");
-      return;
-    }
-    localStorage.setItem("alveolo_sp_url", url);
-    localStorage.setItem("alveolo_sp_key", key);
-    supabaseUrl = url;
-    supabaseKey = key;
-    initSupabase();
-    closeSupabaseModal();
-    showToast("¡Credenciales de Supabase guardadas!");
-  });
-
-  document.getElementById("kds-sound-toggle")?.addEventListener("click", (e) => {
-    kdsSoundEnabled = !kdsSoundEnabled;
-    e.target.closest("button").innerHTML = `<i class="fa-solid fa-volume-${kdsSoundEnabled ? 'high' : 'xmark'}"></i> Sonido: ${kdsSoundEnabled ? 'ON' : 'OFF'}`;
+  // Sound Toggle
+  document.getElementById("admin-sound-toggle")?.addEventListener("click", (e) => {
+    adminSoundEnabled = !adminSoundEnabled;
+    e.target.closest("button").innerHTML = `<i class="fa-solid fa-volume-${adminSoundEnabled ? 'high' : 'xmark'}"></i> Sonido: ${adminSoundEnabled ? 'ON' : 'OFF'}`;
   });
 
   document.getElementById("modal-close")?.addEventListener("click", closeModal);
   document.getElementById("modal-backdrop")?.addEventListener("click", closeModal);
-
   document.getElementById("checkout-whatsapp-btn")?.addEventListener("click", sendWhatsAppOrder);
-}
-
-function closeSupabaseModal() {
-  document.getElementById("modal-supabase")?.classList.remove("active");
-  document.getElementById("modal-supabase-backdrop")?.classList.remove("active");
 }
 
 function addToCartById(itemId) {
@@ -875,8 +855,7 @@ async function sendWhatsAppOrder() {
 
   newOrder.id = `ord-${Date.now()}`;
   ordersData.unshift(newOrder);
-  localStorage.setItem("alveolo_orders", JSON.stringify(ordersData));
-  renderKDS();
+  renderAdminOrders();
   renderAdminMetrics();
   playOrderChime();
 
