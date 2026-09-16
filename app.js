@@ -2,7 +2,7 @@
 // ALVEOLO PIZZERÍA - FULL-STACK PLATFORM ENGINE (SUPABASE REALTIME & BACKOFFICE)
 // ==========================================================================
 
-// Initial Products Database
+// Initial Products Database (Default Fallback)
 let productsData = [
   {
     id: "mm-pesto",
@@ -161,10 +161,10 @@ let flavorsData = [
 let ordersData = [];
 let isStoreOpen = true;
 
-// Supabase State
+// Pre-configured Supabase Credentials for Alveolo
 let supabaseClient = null;
-let supabaseUrl = localStorage.getItem("alveolo_sp_url") || "";
-let supabaseKey = localStorage.getItem("alveolo_sp_key") || "";
+let supabaseUrl = localStorage.getItem("alveolo_sp_url") || "https://wpaeqkpiskdxlaxgveom.supabase.co";
+let supabaseKey = localStorage.getItem("alveolo_sp_key") || "sb_publishable_4ELqp97b8ORO6BVZvrPlww_eK0dhk0o";
 
 // Shopping Cart State
 let cart = [];
@@ -179,8 +179,8 @@ function playOrderChime() {
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.type = "sine";
-    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3); // A5
+    osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3);
     gain.gain.setValueAtTime(0.3, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
     osc.connect(gain);
@@ -203,19 +203,18 @@ document.addEventListener("DOMContentLoaded", () => {
   updateCartUI();
 });
 
-// Initialize Supabase Client if keys exist
+// Initialize Supabase Client
 function initSupabase() {
   if (supabaseUrl && supabaseKey && window.supabase) {
     try {
       supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
-      console.log("Connected to Supabase Realtime Database!");
+      console.log("Connected to Supabase Realtime Database: " + supabaseUrl);
       loadSupabaseData();
       subscribeToOrdersRealtime();
     } catch (err) {
       console.error("Error connecting to Supabase:", err);
     }
   } else {
-    // Load local storage initial state
     const savedOrders = localStorage.getItem("alveolo_orders");
     if (savedOrders) ordersData = JSON.parse(savedOrders);
   }
@@ -225,32 +224,36 @@ function initSupabase() {
 async function loadSupabaseData() {
   if (!supabaseClient) return;
 
-  // Load Products
-  const { data: prods } = await supabaseClient.from("products").select("*");
-  if (prods && prods.length > 0) {
-    productsData = prods;
-    renderProducts("todos");
-  }
+  try {
+    // Load Products
+    const { data: prods } = await supabaseClient.from("products").select("*");
+    if (prods && prods.length > 0) {
+      productsData = prods;
+      renderProducts("todos");
+    }
 
-  // Load Flavors
-  const { data: flavs } = await supabaseClient.from("flavors").select("*");
-  if (flavs && flavs.length > 0) {
-    flavorsData = flavs;
-  }
+    // Load Flavors
+    const { data: flavs } = await supabaseClient.from("flavors").select("*");
+    if (flavs && flavs.length > 0) {
+      flavorsData = flavs;
+    }
 
-  // Load Store Config
-  const { data: conf } = await supabaseClient.from("store_settings").select("*").single();
-  if (conf) {
-    isStoreOpen = conf.is_open;
-    updateStoreOpenUI();
-  }
+    // Load Store Config
+    const { data: conf } = await supabaseClient.from("store_settings").select("*").single();
+    if (conf) {
+      isStoreOpen = conf.is_open;
+      updateStoreOpenUI();
+    }
 
-  // Load Orders
-  const { data: ords } = await supabaseClient.from("orders").select("*").order("created_at", { ascending: false });
-  if (ords) {
-    ordersData = ords;
-    renderKDS();
-    renderAdminMetrics();
+    // Load Orders
+    const { data: ords } = await supabaseClient.from("orders").select("*").order("created_at", { ascending: false });
+    if (ords) {
+      ordersData = ords;
+      renderKDS();
+      renderAdminMetrics();
+    }
+  } catch (e) {
+    console.log("Supabase initial load notice:", e);
   }
 }
 
@@ -471,7 +474,6 @@ function renderAdminFlavors() {
   const list = document.getElementById("admin-flavors-list");
   if (!list) return;
 
-  const availableFlavors = flavorsData.filter(f => f.in_stock);
   list.innerHTML = flavorsData.map(f => `
     <div class="flavor-row">
       <span style="font-weight: 700;">${f.name}</span>
@@ -541,14 +543,12 @@ function updateStoreOpenUI() {
 
 // Event Listeners
 function setupEventListeners() {
-  // Mobile Navigation
   const mobileToggle = document.getElementById("mobile-toggle");
   const navLinks = document.getElementById("nav-links");
   if (mobileToggle && navLinks) {
     mobileToggle.addEventListener("click", () => navLinks.classList.toggle("show"));
   }
 
-  // Filter Pills
   const filterPills = document.querySelectorAll(".filter-pill");
   filterPills.forEach(pill => {
     pill.addEventListener("click", () => {
@@ -560,7 +560,6 @@ function setupEventListeners() {
     });
   });
 
-  // Search Input
   const searchInput = document.getElementById("menu-search");
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
@@ -570,7 +569,6 @@ function setupEventListeners() {
     });
   }
 
-  // Products Grid delegate
   const productsGrid = document.getElementById("products-grid");
   if (productsGrid) {
     productsGrid.addEventListener("click", (e) => {
@@ -588,12 +586,10 @@ function setupEventListeners() {
     });
   }
 
-  // Cart Drawer
   document.getElementById("cart-btn")?.addEventListener("click", openCart);
   document.getElementById("cart-close")?.addEventListener("click", closeCart);
   document.getElementById("cart-backdrop")?.addEventListener("click", closeCart);
 
-  // Delivery Toggle Buttons
   const toggleBtns = document.querySelectorAll(".toggle-btn");
   const addressGroup = document.getElementById("address-group");
   toggleBtns.forEach(btn => {
@@ -605,11 +601,13 @@ function setupEventListeners() {
     });
   });
 
-  // Admin Store Open/Closed Switch
   document.getElementById("admin-toggle-store-btn")?.addEventListener("click", toggleStoreStatus);
 
-  // Supabase Config Modal Trigger
   document.getElementById("btn-config-supabase")?.addEventListener("click", () => {
+    const urlInput = document.getElementById("sp-url");
+    const keyInput = document.getElementById("sp-key");
+    if (urlInput) urlInput.value = supabaseUrl;
+    if (keyInput) keyInput.value = supabaseKey;
     document.getElementById("modal-supabase")?.classList.add("active");
     document.getElementById("modal-supabase-backdrop")?.classList.add("active");
   });
@@ -617,12 +615,11 @@ function setupEventListeners() {
   document.getElementById("modal-supabase-close")?.addEventListener("click", closeSupabaseModal);
   document.getElementById("modal-supabase-backdrop")?.addEventListener("click", closeSupabaseModal);
 
-  // Save Supabase Keys
   document.getElementById("btn-save-supabase-keys")?.addEventListener("click", () => {
     const url = document.getElementById("sp-url").value.trim();
     const key = document.getElementById("sp-key").value.trim();
     if (!url || !key) {
-      alert("Por favor ingresa la SUPABASE_URL y la SUPABASE_ANON_KEY de tu proyecto.");
+      alert("Por favor ingresa la SUPABASE_URL y la SUPABASE_ANON_KEY.");
       return;
     }
     localStorage.setItem("alveolo_sp_url", url);
@@ -631,20 +628,17 @@ function setupEventListeners() {
     supabaseKey = key;
     initSupabase();
     closeSupabaseModal();
-    showToast("¡Credenciales de Supabase guardadas y conectadas!");
+    showToast("¡Credenciales de Supabase guardadas!");
   });
 
-  // KDS Sound Toggle
   document.getElementById("kds-sound-toggle")?.addEventListener("click", (e) => {
     kdsSoundEnabled = !kdsSoundEnabled;
     e.target.closest("button").innerHTML = `<i class="fa-solid fa-volume-${kdsSoundEnabled ? 'high' : 'xmark'}"></i> Sonido: ${kdsSoundEnabled ? 'ON' : 'OFF'}`;
   });
 
-  // Modal Close
   document.getElementById("modal-close")?.addEventListener("click", closeModal);
   document.getElementById("modal-backdrop")?.addEventListener("click", closeModal);
 
-  // Checkout Button
   document.getElementById("checkout-whatsapp-btn")?.addEventListener("click", sendWhatsAppOrder);
 }
 
@@ -871,19 +865,21 @@ async function sendWhatsAppOrder() {
     created_at: new Date().toISOString()
   };
 
-  // Save to Supabase Cloud Database or Local
   if (supabaseClient) {
-    await supabaseClient.from("orders").insert([newOrder]);
-  } else {
-    newOrder.id = `ord-${Date.now()}`;
-    ordersData.unshift(newOrder);
-    localStorage.setItem("alveolo_orders", JSON.stringify(ordersData));
-    renderKDS();
-    renderAdminMetrics();
-    playOrderChime();
+    try {
+      await supabaseClient.from("orders").insert([newOrder]);
+    } catch (e) {
+      console.log("Supabase insert order error:", e);
+    }
   }
 
-  // Build WhatsApp Message
+  newOrder.id = `ord-${Date.now()}`;
+  ordersData.unshift(newOrder);
+  localStorage.setItem("alveolo_orders", JSON.stringify(ordersData));
+  renderKDS();
+  renderAdminMetrics();
+  playOrderChime();
+
   const modeText = deliveryMode === "delivery" ? `🛵 *DELIVERY A DOMICILIO*\n📍 *Dirección:* ${address}` : `🏪 *RETIRO EN EL LOCAL*`;
 
   let message = `🍕 *NUEVO PEDIDO - ALVEOLO PIZZERÍA*\n`;
