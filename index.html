@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Best Practices -->
+  <title>Alveolo - Pizzería Artesanal & Masa Madre | Montevideo</title>
+  <meta name="description" content="Pizzería Artesanal Alveolo. Especialistas en Pizzas de Masa Madre 32cm y Pizzas Tradicionales por Metro a la piedra. 48hs de fermentación. Pedidos por WhatsApp al 095 679 986.">
+  <meta name="keywords" content="Pizzeria Alveolo, Pizza Masa Madre, Pizza por metro, Pizzeria Montevideo, Delivery Pizza, Masa Madre 32cm, Muzza por metro">
+  
+  <!-- Open Graph / Social Media -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Alveolo - Pizzería Artesanal & Masa Madre">
+  <meta property="og:description" content="Masa madre fermentada por 48hs, horneada a la piedra con ingredientes seleccionados. ¡Pide online por WhatsApp!">
+  <meta property="og:image" content="assets/logo.jpg">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="assets/logo.jpg" type="image/jpeg">
+  
+  <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Top Announcement Bar -->
+  <div class="announcement-bar">
+    <div class="container announcement-content">
+      <span><i class="fa-solid fa-fire"></i> ¡Masa Madre con 48hs de Fermentación!</span>
+      <span class="desktop-only"><i class="fa-solid fa-truck-fast"></i> Delivery de Viernes a Domingo | Envíos por PedidosYa de Miércoles a Lunes</span>
+      <a href="https://wa.me/59895679986" target="_blank" rel="noopener" class="announcement-link">
+        <i class="fa-brands fa-whatsapp"></i> Pedir 095 679 986
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Navigation Header -->
+  <header class="navbar" id="navbar">
+    <div class="container navbar-container">
+      <a href="#" class="brand-logo">
+        <img src="assets/logo.jpg" alt="Alveolo Logo" class="logo-img">
+        <div class="brand-text">
+          <span class="brand-name">ALVEOLO</span>
+          <span class="brand-tagline">PIZZERÍA MASA MADRE</span>
+        </div>
+      </a>
+
+      <nav class="nav-links" id="nav-links">
+        <a href="#inicio" class="nav-link active">Inicio</a>
+        <a href="#menu" class="nav-link">Menú & Precios</a>
+        <a href="#concepto" class="nav-link">Masa Madre</a>
+        <a href="#nosotros" class="nav-link">El Secreto</a>
+        <a href="#contacto" class="nav-link">Ubicación & Horarios</a>
+      </nav>
+
+      <div class="header-actions">
+        <button class="cart-trigger" id="cart-btn" aria-label="Ver Carrito de Pedidos">
+          <i class="fa-solid fa-basket-shopping"></i>
+          <span class="cart-label desktop-only">Tu Pedido</span>
+          <span class="cart-count" id="cart-badge">0</span>
+        </button>
+        <button class="mobile-toggle" id="mobile-toggle" aria-label="Abrir Menú">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section" id="inicio">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <div class="hero-badge">
+        <i class="fa-solid fa-wheat-awn"></i> 100% Artesanal a la Piedra
+      </div>
+      <h1 class="hero-title">
+        La pizza perfecta se define por su <span class="highlight-text">Alveolo</span>
+      </h1>
+      <p class="hero-subtitle">
+        Masa madre fermentada durante 48 horas. Ligera, crocante por fuera, aireada por dentro y cocinada a altas temperaturas a la piedra.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="#menu" class="btn btn-primary btn-lg">
+          <i class="fa-solid fa-pizza-slice"></i> Ver Menú Completo
+        </a>
+        <a href="https://wa.me/59895679986" target="_blank" rel="noopener" class="btn btn-whatsapp btn-lg">
+          <i class="fa-brands fa-whatsapp"></i> Pedir por WhatsApp
+        </a>
+      </div>
+
+      <div class="hero-features-grid">
+        <div class="feature-pill">
+          <i class="fa-solid fa-clock"></i>
+          <div>
+            <strong>48 Horas</strong>
+            <span>Fermentación lenta</span>
+          </div>
+        </div>
+        <div class="feature-pill">
+          <i class="fa-solid fa-fire-flame-curved"></i>
+          <div>
+            <strong>A la Piedra</strong>
+            <span>Horneado perfecto</span>
+          </div>
+        </div>
+        <div class="feature-pill">
+          <i class="fa-solid fa-ruler-horizontal"></i>
+          <div>
+            <strong>Pizzas por Metro</strong>
+            <span>Tradicionales & Gourmet</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Highlights / Quick Menu Showcase -->
+  <section class="showcase-banner">
+    <div class="container">
+      <div class="showcase-grid">
+        
+        <div class="showcase-card highlight-card">
+          <div class="showcase-image">
+            <img src="assets/pizza_masa_madre_pesto.jpg" alt="Pizza Masa Madre 32cm Alveolo">
+            <span class="card-tag">⭐ Estrella de la casa</span>
+          </div>
+          <div class="showcase-info">
+            <span class="category-badge">Masa Madre 32 cm</span>
+            <h3>Pizza Masa Madre 32 cm</h3>
+            <p>Masa alveolada con salsa de tomate de la casa, mozzarella fundida y gustos seleccionados a elección.</p>
+            <div class="price-row">
+              <span class="price">$500</span>
+              <button class="btn btn-sm btn-primary add-to-cart-direct" data-id="mm-32" data-name="Pizza Masa Madre 32 cm" data-price="500">
+                <i class="fa-solid fa-plus"></i> Pedir
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-image">
+            <img src="assets/pizza_metro_panceta_aceitunas.jpg" alt="Pizza Tradicional a la Piedra por Metro">
+            <span class="card-tag">Rinde para compartir</span>
+          </div>
+          <div class="showcase-info">
+            <span class="category-badge">A la Piedra por Metro</span>
+            <h3>Pizzas por Metro</h3>
+            <p>Pizzas rectangulares de 1/2 metro o 1 metro. La clásica muzzarella uruguaya a la piedra con tus gustos favoritos.</p>
+            <div class="price-row">
+              <span class="price">Desde $450</span>
+              <a href="#menu" class="btn btn-sm btn-outline">
+                Elegir Gustos
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-image">
+            <img src="assets/pizza_medio_metro_coca.jpg" alt="Combo 1/2 Metro de Muzza con Coca-Cola">
+            <span class="card-tag">🔥 Combo Favorito</span>
+          </div>
+          <div class="showcase-info">
+            <span class="category-badge">Combos Especiales</span>
+            <h3>1/2 Metro Muzza + Bebida</h3>
+            <p>Ideal para 2 personas. Medio metro de muzzarella derretida sobre crujiente masa a la piedra acompañada de Coca-Cola.</p>
+            <div class="price-row">
+              <span class="price">$630</span>
+              <button class="btn btn-sm btn-primary add-to-cart-direct" data-id="combo-12m" data-name="1/2 Metro Muzza + Coca-Cola 1.5L" data-price="630">
+                <i class="fa-solid fa-plus"></i> Pedir Combo
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Menu Section -->
+  <section class="menu-section" id="menu">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-subtitle">NUESTRA CARTA</span>
+        <h2 class="section-title">Menú & Precios de Alveolo</h2>
+        <p class="section-description">Selecciona la opción que más se te antoje y agrégala a tu pedido. Realizamos envíos a domicilio y retiros en local.</p>
+      </div>
+
+      <!-- Menu Search & Filter Pills -->
+      <div class="menu-controls">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="menu-search" placeholder="Buscar pizza o ingrediente (ej. Pesto, Peperoni, Panceta)...">
+        </div>
+
+        <div class="filter-pills" id="filter-pills">
+          <button class="filter-pill active" data-category="todos">Todas las Opciones</button>
+          <button class="filter-pill" data-category="masa-madre">Pizzas Masa Madre (32cm)</button>
+          <button class="filter-pill" data-category="por-metro">Pizzas por Metro a la Piedra</button>
+          <button class="filter-pill" data-category="gustos">Gustos & Adicionales</button>
+          <button class="filter-pill" data-category="bebidas">Bebidas & Complementos</button>
+        </div>
+      </div>
+
+      <!-- Products Grid -->
+      <div class="products-grid" id="products-grid">
+        <!-- Injected dynamically by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Flyer Image Showcase Section -->
+  <section class="flyer-section">
+    <div class="container">
+      <div class="flyer-wrapper">
+        <div class="flyer-info">
+          <span class="section-subtitle">CARTA OFICIAL EN IMAGEN</span>
+          <h2>Consulá nuestro menú completo impreso</h2>
+          <p>Ten a mano todos los gustos, promos y combinaciones disponibles en Alveolo Pizzería.</p>
+          <div class="contact-quick-list">
+            <div class="quick-contact-item">
+              <i class="fa-solid fa-phone"></i>
+              <div>
+                <strong>Teléfono Fijo</strong>
+                <span>2355 2326</span>
+              </div>
+            </div>
+            <div class="quick-contact-item">
+              <i class="fa-brands fa-whatsapp"></i>
+              <div>
+                <strong>WhatsApp Pedidos</strong>
+                <span>095 679 986</span>
+              </div>
+            </div>
+            <div class="quick-contact-item">
+              <i class="fa-brands fa-instagram"></i>
+              <div>
+                <strong>Instagram</strong>
+                <span>@Pizzeria.alveolo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flyer-card">
+          <img src="assets/menu_flyer.jpg" alt="Menú Completo Alveolo Pizzería Masa Madre" class="flyer-img" id="flyer-zoom">
+          <div class="flyer-overlay-hint">
+            <i class="fa-solid fa-magnifying-glass-plus"></i> Menú Oficial Alveolo
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Concept / Masa Madre Section -->
+  <section class="concept-section" id="concepto">
+    <div class="container">
+      <div class="concept-grid">
+        <div class="concept-image-wrapper">
+          <img src="assets/hero_pizza.png" alt="Masa Madre Alveolada" class="concept-img main-img">
+          <div class="concept-badge">
+            <span class="number">48h</span>
+            <span class="text">Fermentación Natural</span>
+          </div>
+        </div>
+        <div class="concept-content">
+          <span class="section-subtitle">¿QUÉ ES EL ALVEOLO?</span>
+          <h2>El secreto de una masa digestiva, crujiente y aireada</h2>
+          <p>
+            En <strong>Alveolo</strong>, llamamos <em>alveolo</em> a la estructura en forma de pequeñas bolsas de aire que se crean dentro de la masa durante una fermentación lenta y natural de 48 horas.
+          </p>
+          <ul class="concept-checklist">
+            <li>
+              <i class="fa-solid fa-circle-check"></i>
+              <div>
+                <strong>Fácil Digestión</strong>
+                <p>Al madurar 48hs, los azúcares y gluten se descomponen naturalmente, evitando la sensación de pesadez.</p>
+              </div>
+            </li>
+            <li>
+              <i class="fa-solid fa-circle-check"></i>
+              <div>
+                <strong>Textura Inigualable</strong>
+                <p>Borde alto, crujiente por fuera y esponjoso y aireado por dentro.</p>
+              </div>
+            </li>
+            <li>
+              <i class="fa-solid fa-circle-check"></i>
+              <div>
+                <strong>Ingredientes Seleccionados</strong>
+                <p>Queso muzzarella fundido de primera calidad, bondiola, pesto casero, panceta crocante y vegetales frescos.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reviews / Community -->
+  <section class="reviews-section" id="nosotros">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-subtitle">LO QUE DICEN NUSTROS CLIENTES</span>
+        <h2 class="section-title">La experiencia Alveolo</h2>
+      </div>
+
+      <div class="reviews-grid">
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p class="review-text">"La masa madre de 32cm con pesto es impresionante. Crujiente, liviana y el sabor del queso es increíble. Súper recomendado."</p>
+          <div class="reviewer">
+            <div class="avatar">MR</div>
+            <div>
+              <strong>Mathías R.</strong>
+              <span>Cliente Frecuente</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p class="review-text">"Pedimos 1 metro de muzzarella con panceta crocante y aceitunas para el cumpleaños y rindió bárbaro. LLegó súper caliente y a tiempo."</p>
+          <div class="reviewer">
+            <div class="avatar">LC</div>
+            <div>
+              <strong>Lucía C.</strong>
+              <span>Pedido por WhatsApp</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="stars">★★★★★</div>
+          <p class="review-text">"Excelente pizzería de barrio. La calidad de la masa y la atención por WhatsApp es rápida y muy amable."</p>
+          <div class="reviewer">
+            <div class="avatar">GO</div>
+            <div>
+              <strong>Gonzalo O.</strong>
+              <span>Cliente PedidosYa</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact & Delivery Hours Section -->
+  <section class="contact-section" id="contacto">
+    <div class="container">
+      <div class="contact-card-wrapper">
+        <div class="contact-main-info">
+          <span class="section-subtitle">HACE TU PEDIDO DIRECTO</span>
+          <h2>Ubicación & Horarios de Atención</h2>
+          <p>Estamos listos para preparar tu pizza fresca. Elige retiro o delivery.</p>
+
+          <div class="info-blocks-grid">
+            <div class="info-block">
+              <div class="info-icon"><i class="fa-solid fa-motorcycle"></i></div>
+              <div class="info-text">
+                <h3>Horario Delivery Propio</h3>
+                <p><strong>Viernes a Domingo:</strong> 19:00 a 23:59 hs</p>
+                <span class="highlight-badge">Envío directo a tu casa</span>
+              </div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-icon"><i class="fa-solid fa-store"></i></div>
+              <div class="info-text">
+                <h3>Horario Habitual (Local & PedidosYa)</h3>
+                <p><strong>Miércoles a Lunes:</strong> 19:00 a 23:59 hs</p>
+                <span class="muted-text">(Martes cerrado por descanso)</span>
+              </div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-icon"><i class="fa-solid fa-phone-volume"></i></div>
+              <div class="info-text">
+                <h3>Teléfonos de Atención</h3>
+                <p><strong>Fijo:</strong> 2355 2326</p>
+                <p><strong>WhatsApp:</strong> 095 679 986</p>
+              </div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-icon"><i class="fa-brands fa-instagram"></i></div>
+              <div class="info-text">
+                <h3>Seguinos en Instagram</h3>
+                <p>@Pizzeria.alveolo</p>
+                <a href="https://instagram.com/Pizzeria.alveolo" target="_blank" rel="noopener" class="link-styled">Ver novedades & historias →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-cta-box text-center">
+          <img src="assets/logo.jpg" alt="Alveolo Logo" class="cta-logo">
+          <h3>¿Tenés hambre?</h3>
+          <p>Hacé tu pedido en 1 minuto por WhatsApp y recibilo calentito.</p>
+          <a href="https://wa.me/59895679986?text=Hola!%20Quiero%20hacer%20un%20pedido%20en%20Alveolo%20Pizzer%C3%ADa." target="_blank" rel="noopener" class="btn btn-whatsapp btn-block btn-lg">
+            <i class="fa-brands fa-whatsapp"></i> Chatear por WhatsApp
+          </a>
+          <a href="tel:23552326" class="btn btn-secondary btn-block">
+            <i class="fa-solid fa-phone"></i> Llamar al 2355 2326
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-brand">
+        <img src="assets/logo.jpg" alt="Alveolo" class="footer-logo">
+        <p>Alveolo - Pizzería Artesanal & Masa Madre. 48 Horas de Fermentación. Montevideo, Uruguay.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#menu">Menú & Precios</a></li>
+          <li><a href="#concepto">Masa Madre</a></li>
+          <li><a href="#contacto">Contacto & Horarios</a></li>
+        </ul>
+      </div>
+      <div class="footer-social">
+        <h4>Seguinos</h4>
+        <div class="social-icons">
+          <a href="https://instagram.com/Pizzeria.alveolo" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="https://wa.me/59895679986" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>&copy; 2026 Alveolo Pizzería. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Shopping Cart Slide-over Drawer -->
+  <div class="cart-drawer-backdrop" id="cart-backdrop"></div>
+  <aside class="cart-drawer" id="cart-drawer">
+    <div class="cart-header">
+      <div class="cart-title">
+        <i class="fa-solid fa-basket-shopping"></i>
+        <h3>Tu Pedido</h3>
+      </div>
+      <button class="cart-close" id="cart-close" aria-label="Cerrar Carrito">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="cart-body" id="cart-body">
+      <!-- Items dynamically populated -->
+    </div>
+
+    <div class="cart-footer" id="cart-footer">
+      <div class="delivery-options">
+        <label class="delivery-label">Tipo de Entrega:</label>
+        <div class="toggle-group">
+          <button type="button" class="toggle-btn active" data-mode="delivery">
+            <i class="fa-solid fa-motorcycle"></i> Delivery
+          </button>
+          <button type="button" class="toggle-btn" data-mode="retiro">
+            <i class="fa-solid fa-store"></i> Retiro en Local
+          </button>
+        </div>
+      </div>
+
+      <div class="customer-inputs">
+        <div class="input-group">
+          <label for="cust-name">Tu Nombre *</label>
+          <input type="text" id="cust-name" placeholder="Ej: Eduardo" required>
+        </div>
+        <div class="input-group" id="address-group">
+          <label for="cust-address">Dirección de Envío *</label>
+          <input type="text" id="cust-address" placeholder="Ej: Av. Italia 1234, Apto 501">
+        </div>
+        <div class="input-group">
+          <label for="cust-notes">Aclaraciones o Notas (Opcional)</label>
+          <input type="text" id="cust-notes" placeholder="Ej: Timbre no funciona / Pesto aparte">
+        </div>
+      </div>
+
+      <div class="cart-summary">
+        <div class="summary-line">
+          <span>Subtotal:</span>
+          <span id="cart-subtotal">$0</span>
+        </div>
+        <div class="summary-line highlight-total">
+          <span>Total a Pagar:</span>
+          <span id="cart-total">$0</span>
+        </div>
+      </div>
+
+      <button class="btn btn-whatsapp btn-block btn-lg" id="checkout-whatsapp-btn">
+        <i class="fa-brands fa-whatsapp"></i> Enviar Pedido por WhatsApp
+      </button>
+    </div>
+  </aside>
+
+  <!-- Item Options Modal (For Masa Madre Gustos / Metro combinations) -->
+  <div class="modal-backdrop" id="modal-backdrop"></div>
+  <div class="item-modal" id="item-modal">
+    <button class="modal-close" id="modal-close"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-content" id="modal-content-body">
+      <!-- Dynamic modal content -->
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Floating WhatsApp Action Button -->
+  <a href="https://wa.me/59895679986?text=Hola!%20Quiero%20hacer%20un%20pedido%20en%20Alveolo." target="_blank" rel="noopener" class="floating-whatsapp" aria-label="WhatsApp Directo">
+    <i class="fa-brands fa-whatsapp"></i>
+    <span class="tooltip">Pedir por WhatsApp</span>
+  </a>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
